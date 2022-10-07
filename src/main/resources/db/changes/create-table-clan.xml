@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="vzakirov" id="create_table_clan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="clan"/>
+            </not>
+        </preConditions>
+        <createTable tableName="clan">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clan_id_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="gold" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
