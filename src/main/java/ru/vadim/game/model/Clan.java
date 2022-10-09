@@ -1,14 +1,15 @@
 package ru.vadim.game.model;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
+@Table(name = "clan")
 public class Clan {
+    @Id
     private long id;     // id клана
     private String name; // имя клана
     private int gold;    // текущее количество золота в казне клана

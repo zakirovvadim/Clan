@@ -12,7 +12,7 @@ import ru.vadim.game.service.ClanService;
 
 @Controller
 @RequiredArgsConstructor
-public class AddGoldController {
+public class ClanController {
 
     private final ClanService clanService;
 
@@ -29,14 +29,21 @@ public class AddGoldController {
                 .map(acc -> new ResponseEntity<>(acc, HttpStatus.OK))
                 .switchIfEmpty(Mono.just(new ResponseEntity<>(null, HttpStatus.NOT_FOUND)));
     }
+
     @GetMapping("/clans")
     public Flux<Clan> getAllAccounts() {
         return clanService.findAll();
     }
 
-    @PutMapping("/clan/{clanId}")
-    public void updateClan(@PathVariable("clanId") long clanId, @RequestBody Clan clan){
-        clanService.updateGoldBalance(clan);
+    @PutMapping("/plusGold")
+    public Mono<ResponseEntity<Integer>> plusGoldUpdate(@RequestBody Clan clan){
+        return clanService.plusGoldBalance(clan).map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/minusGold")
+    public Mono<ResponseEntity<Integer>> minusGoldUpdate(@RequestBody Clan clan){
+        return clanService.minusGoldBalance(clan).map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }

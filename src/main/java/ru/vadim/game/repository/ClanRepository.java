@@ -5,7 +5,6 @@ import io.r2dbc.spi.ConnectionFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.vadim.game.model.Clan;
@@ -15,7 +14,6 @@ import ru.vadim.game.model.Clan;
 public class ClanRepository {
 
     private final ConnectionFactory connectionFactory;
-    private final Repo repo;
     private final DatabaseClient databaseClient;
 
     public Mono<Clan> findById(long id) {
@@ -65,19 +63,17 @@ public class ClanRepository {
                 })));
     }
 
-//    public Mono<Clan> updateGoldBalance(long id, Clan clan) {
-//        return repo.findById(id)
-//                .map(clann -> {
-//            clann.setGold(clann.getGold() + clan.getGold());
-//            return clann;
-//        })
-//                .flatMap(clann -> repo.save(clann).map(Clan::new));
-//    }
+    public Mono<Integer> plusUpdate(Clan p) {
+        return this.databaseClient.sql("UPDATE clan set gold= gold + :gold WHERE id=:id")
+                .bind("gold", p.getGold())
+                .bind("id", p.getId())
+                .fetch()
+                .rowsUpdated()
+                .doOnError(throwable -> System.out.println(throwable.getMessage()));
+    }
 
-    public Mono<Integer> update(Clan p) {
-        System.out.println("Repository p " + p);
-        System.out.println(databaseClient);
-        return this.databaseClient.sql("UPDATE Clan set gold = :gold WHERE id = :id")
+    public Mono<Integer> minusUpdate(Clan p) {
+        return this.databaseClient.sql("UPDATE clan set gold= gold - :gold WHERE id=:id")
                 .bind("gold", p.getGold())
                 .bind("id", p.getId())
                 .fetch()

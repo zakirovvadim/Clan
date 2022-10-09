@@ -1,52 +1,37 @@
 package ru.vadim.game.config;
 
-import io.netty.util.internal.StringUtil;
+//import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
+//import io.r2dbc.postgresql.PostgresqlConnectionFactory;
+//import io.r2dbc.postgresql.codec.EnumCodec;
+
+import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import org.reactivestreams.Publisher;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
-import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager;
-import org.springframework.data.r2dbc.connectionfactory.init.CompositeDatabasePopulator;
-import org.springframework.data.r2dbc.connectionfactory.init.ConnectionFactoryInitializer;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
-import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Flux;
-
-import java.util.List;
 
 import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 
 @Configuration
-@EnableR2dbcRepositories
 public class R2DBCConfiguration {
 
     @Bean
-    public ConnectionFactory connectionFactory(R2DBCConfigurationProperties properties) {
-//        ConnectionFactoryOptions baseOptions = ConnectionFactoryOptions.parse(properties.getUrl());
-//        ConnectionFactoryOptions.Builder ob = ConnectionFactoryOptions.builder().from(baseOptions);
-//        if (!StringUtil.isNullOrEmpty(properties.getUser())) {
-//            ob = ob.option(USER, properties.getUser());
-//        }
-//        if (!StringUtil.isNullOrEmpty(properties.getPassword())) {
-//            ob = ob.option(PASSWORD, properties.getPassword());
-//        }
-        ConnectionFactoryOptions options = builder()
+    public ConnectionFactory connectionFactory() {
+        ConnectionFactoryOptions conFac = builder()
                 .option(DRIVER, "h2")
-//                .option(PROTOCOL, "mem")  // file, mem
-//                .option(HOST, "localhost")
-//                .option(PORT, 8082)
+                .option(PROTOCOL, "mem")  // file, mem
+                .option(HOST, "8082")
                 .option(USER, "sa")
-                .option(PASSWORD, "q")
+                .option(PASSWORD, "1")
                 .option(DATABASE, "r2dbc:h2:mem:///testdb")
                 .build();
-        return ConnectionFactories.get(options);
-        //return ConnectionFactories.get("r2dbc:h2:mem:///test?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        ConnectionFactory connectionFactory = ConnectionFactories.get(conFac);
+        return connectionFactory;
     }
 
     @Bean
@@ -70,19 +55,17 @@ public class R2DBCConfiguration {
                         .log()
                         .blockLast();
     }
-//
-////    @Bean
-////    public ConnectionFactory connectionFactory() {
-////        return H2ConnectionFactory.inMemory("test");
-////    }
-////
-////
-//    @Bean
-//    DatabaseClient databaseClient(ConnectionFactory connectionFactory) {
-//        return DatabaseClient.create(connectionFactory);
-//    }
-//    @Bean
-//    ReactiveTransactionManager transactionManager(ConnectionFactory connectionFactory) {
-//        return new R2dbcTransactionManager(connectionFactory);
-//    }
+    @Bean
+    public Publisher<? extends Connection> connection(ConnectionFactory connectionFactory) {
+        return connectionFactory.create();
+    }
+
+    @Bean
+    DatabaseClient databaseClient(ConnectionFactory connectionFactory) {
+        return DatabaseClient.builder()
+                .connectionFactory(connectionFactory)
+                //.bindMarkers(() -> BindMarkersFactory.named(":", "", 20).create())
+                .namedParameters(true)
+                .build();
+    }
 }

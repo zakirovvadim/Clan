@@ -2,7 +2,6 @@ package ru.vadim.game.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.vadim.game.model.Clan;
@@ -27,7 +26,11 @@ public class ClanService {
         return clanRepository.findAll();
     }
 
-    public Mono<Integer> updateGoldBalance(Clan clan) {
-        return clanRepository.update(clan);
+    public Mono<Integer> plusGoldBalance(Clan clan) {
+        return clanRepository.plusUpdate(clan);
+    }
+
+    public Mono<Integer> minusGoldBalance(Clan clan) {
+        return clanRepository.minusUpdate(clan);
     }
 }
