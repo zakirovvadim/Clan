@@ -17,7 +17,7 @@ public class ClanController {
     private final ClanService clanService;
 
     @PostMapping("/clan")
-    public Mono<ResponseEntity<Clan>> postAccount(@RequestBody Clan clan) {
+    public Flux<ResponseEntity<Clan>> postAccount(@RequestBody Clan clan) {
         return clanService.createNewClan(clan)
                 .map(acc -> new ResponseEntity<>(acc, HttpStatus.CREATED))
                 .log();
@@ -36,13 +36,13 @@ public class ClanController {
     }
 
     @PutMapping("/plusGold")
-    public Mono<ResponseEntity<Integer>> plusGoldUpdate(@RequestBody Clan clan){
+    public Flux<ResponseEntity<Clan>> plusGoldUpdate(@RequestBody Clan clan){
         return clanService.plusGoldBalance(clan).map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/minusGold")
-    public Mono<ResponseEntity<Integer>> minusGoldUpdate(@RequestBody Clan clan){
+    public Flux<ResponseEntity<Clan>> minusGoldUpdate(@RequestBody Clan clan){
         return clanService.minusGoldBalance(clan).map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

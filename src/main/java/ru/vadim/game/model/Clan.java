@@ -1,5 +1,6 @@
 package ru.vadim.game.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -10,14 +11,20 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(name = "clan")
 public class Clan {
     @Id
-    private long id;     // id клана
-    private String name; // имя клана
-    private int gold;    // текущее количество золота в казне клана
+    private Long id;
+    private String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer gold;
 
     public Clan(long id, String name, int gold) {
         this.id = id;
         this.name = name;
         this.gold = gold;
+    }
+
+    public Clan(long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Clan(Clan clan) {

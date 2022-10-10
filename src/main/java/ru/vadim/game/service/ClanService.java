@@ -18,7 +18,7 @@ public class ClanService {
         return clanRepository.findById(id);
     }
 
-    public Mono<Clan> createNewClan(Clan clan) {
+    public Flux<Clan> createNewClan(Clan clan) {
        return clanRepository.createNewClan(clan);
     }
 
@@ -26,11 +26,11 @@ public class ClanService {
         return clanRepository.findAll();
     }
 
-    public Mono<Integer> plusGoldBalance(Clan clan) {
+    public Flux<Clan> plusGoldBalance(Clan clan) {
         return clanRepository.plusUpdate(clan);
     }
 
-    public Mono<Integer> minusGoldBalance(Clan clan) {
+    public Flux<Clan> minusGoldBalance(Clan clan) {
         return clanRepository.minusUpdate(clan);
     }
 }
